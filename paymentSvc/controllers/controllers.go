@@ -36,10 +36,10 @@ func Payments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if prob == 0 {
-		utils.Response(map[string]string{"status": "true"}, http.StatusBadRequest).Send(w)
+		utils.Response(map[string]string{"result": "true"}, http.StatusBadRequest).Send(w)
 		return
 	}
-	utils.Response(map[string]string{"status": "false"}, http.StatusBadRequest).Send(w)
+	utils.Response(map[string]string{"result": "false"}, http.StatusBadRequest).Send(w)
 	return
 }
 
