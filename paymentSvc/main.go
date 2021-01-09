@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/GhvstCode/tinjis/paymentsvc/controllers"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -21,12 +22,12 @@ func handleRequest() {
 	r := mux.NewRouter().StrictSlash(true)
 
 	// Register API Routes
-	//r.HandleFunc("/rest/health", controllers.HealthCheck).Methods(http.MethodGet)
-	//r.HandleFunc("/", controllers.Payments).Methods(http.MethodPost)
+	r.HandleFunc("/rest/health", controllers.HealthCheck).Methods(http.MethodGet)
+	r.HandleFunc("/", controllers.Payments).Methods(http.MethodPost)
 
 	//Create HTTP Server
 	s := &http.Server{
-		Addr: "9090",
+		Addr: ":9090",
 		Handler:      r,
 		IdleTimeout:  5 * time.Minute, //120
 		ReadTimeout:  5 * time.Minute,
@@ -35,12 +36,12 @@ func handleRequest() {
 
 	//serve up the HTTP Server, make it listen for requests on the specified PORT.
 	go func() {
+		fmt.Println("Server is up on port", s.Addr)
 		err := s.ListenAndServe()
 		if err != nil {
 			fmt.Println(err)
-			log.Fatal("Error starting server on port", s.Addr)
+			log.Fatal("Terminating server on port", s.Addr)
 		}
-		fmt.Println("Server is up on port", s.Addr)
 	}()
 
 	
