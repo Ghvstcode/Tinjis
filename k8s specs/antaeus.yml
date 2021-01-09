@@ -31,11 +31,12 @@ spec:
               value: not-yet-configured
           readinessProbe:
             httpGet:
-              path: /demo/hello
+              path: /rest/health
               port: 8080
             periodSeconds: 1
           livenessProbe:
             httpGet:
-              path: /demo/hello
+              path: /rest/health
               port: 8080
-
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
