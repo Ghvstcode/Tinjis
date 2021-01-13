@@ -27,6 +27,7 @@ func Payments(w http.ResponseWriter, r *http.Request) {
 		utils.Response(map[string]string{"error": "Currency Field is required"}, http.StatusBadRequest).Send(w)
 		return
 	}
+	fmt.Println(p.ID)
 	if p.ID < 1 {
 		utils.Response(map[string]string{"error": "ID must be an Int greater than 1"}, http.StatusBadRequest).Send(w)
 		return

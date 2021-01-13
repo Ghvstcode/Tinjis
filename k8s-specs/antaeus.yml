@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: antaeus-api
+  labels:
+    type: core-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: core-api
+  minReadySeconds: 1
+  progressDeadlineSeconds: 60
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        type: core-api
+    spec:
+      containers:
+        - name: antaeus-api
+          image: ghvst/tinjis-core
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PAYMENT_PROVIDER_ENDPOINT
+              value: http://payment-svc.default.svc.cluster.local:9090
+          readinessProbe:
+            httpGet:
+              path: /rest/health
+              port: 8000
+            periodSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /rest/health
+              port: 8000
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+          startupProbe:
+            httpGet:
+              path: /rest/health
+              port: 8000
+            failureThreshold: 200
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: antaeus-api-svc
+#  labels:
+#    type: core-api
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      protocol: TCP
+      targetPort: 8000
+      nodePort: 30475
+  selector:
+    type: core-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment
+  labels:
+    type: payment-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: payment-api
+  minReadySeconds: 1
+  progressDeadlineSeconds: 60
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        type: payment-api
+    spec:
+      containers:
+        - name: payment
+          image: ghvst/tinjis-paymentsvc
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            httpGet:
+              path: /rest/health
+              port: 9090
+            periodSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /rest/health
+              port: 9090
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-svc
+#  labels:
+#    type: core-api
+spec:
+  type: NodePort
+  ports:
+    - port: 9090
+      protocol: TCP
+      targetPort: 9090
+      nodePort: 30476
+  selector:
+    type: payment-api
