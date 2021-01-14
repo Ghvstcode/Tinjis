@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: antaeus-api
-          image: ghvst/tinjis-core
+          image: ghvst/antaeus-core
           imagePullPolicy: IfNotPresent
           env:
             - name: PAYMENT_PROVIDER_ENDPOINT
